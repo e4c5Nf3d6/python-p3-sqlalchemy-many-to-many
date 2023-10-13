@@ -27,8 +27,8 @@ class Game(Base):
     platform = Column(String())
     price = Column(Integer())
 
-    reviews = relationship('Review', backref=backref('game'))
     users = relationship('User', secondary=game_user, back_populates='games')
+    reviews = relationship('Review', backref=backref('game'))
 
     def __repr__(self):
         return f'Game(id={self.id}, ' + \
@@ -41,14 +41,16 @@ class Review(Base):
     id = Column(Integer(), primary_key=True)
     score = Column(Integer())
     comment = Column(String())
-    user_id = Column(Integer(), ForeignKey('users.id'))
+
     game_id = Column(Integer(), ForeignKey('games.id'))
+    user_id = Column(Integer(), ForeignKey('users.id'))
+
 
     def __repr__(self):
         return f'Review(id={self.id}, ' + \
             f'score={self.score}, ' + \
             f'game_id={self.game_id})'
-
+    
 class User(Base):
     __tablename__ = 'users'
 
@@ -57,9 +59,10 @@ class User(Base):
     created_at = Column(DateTime(), server_default=func.now())
     updated_at = Column(DateTime(), onupdate=func.now())
 
-    reviews = relationship('Review', backref=backref('user'))
     games = relationship('Game', secondary=game_user, back_populates='users')
+    reviews = relationship('Review', backref=backref('user'))
 
     def __repr__(self):
         return f'User(id={self.id}, ' + \
             f'name={self.name})'
+    
